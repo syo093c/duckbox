@@ -39,6 +39,12 @@ class WrapperModel(L.LightningModule):
 
         return loss
 
+    def on_before_optimizer_step(self, optimizer):
+        # log grad norm
+        grad_norm_dict=grad_norm(self,norm_type=2)
+        grad=grad_norm_dict['grad_2.0_norm_total']
+        self.log("train/grad_norm",grad)
+
     def configure_optimizers(self):
         steps_per_ep = len(self.train_dl)
         train_steps = len(self.train_dl) * self.trainer.max_epochs  # max epouch 100
