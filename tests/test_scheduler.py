@@ -9,10 +9,10 @@ import ipdb
 from lightning.pytorch.loggers import TensorBoardLogger
 from lightning.pytorch.callbacks import LearningRateMonitor
 from torch.optim import AdamW
+from transformers import get_cosine_schedule_with_warmup,get_cosine_with_hard_restarts_schedule_with_warmup
+from transformers import get_polynomial_decay_schedule_with_warmup
 
 import sys
-sys.path.append('../misc')
-from learning_rates import AnnealingLR
 
 class ToyModel(L.LightningModule):
     def __init__(self):
@@ -36,16 +36,12 @@ class ToyModel(L.LightningModule):
 
     def configure_optimizers(self):
         train_steps = self.trainer.max_steps # note: set at trainer init
-        optimizer = AdamW(self.parameters(), lr=self.learning_rate,betas=(0.9, 0.999), weight_decay=0.05)    
-        lr_scheduler = AnnealingLR(
-            optimizer=optimizer,
-            #start_lr=self.learning_rate,
-            start_lr=1,
-            warmup_iter=int(train_steps * 0.03 / self.trainer.accumulate_grad_batches),
-            last_iter=int(train_steps*0.6/self.trainer.accumulate_grad_batches),
-            total_iters=int(train_steps/self.trainer.accumulate_grad_batches),
-            min_lr=0.5,
-            decay_style='cosine',
+        optimizer = AdamW(self.parameters(), lr=self.learning_rate,betas=(0.9, 0.999), weight_decay=0.05)
+        lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=int(train_steps* 0.03/self.trainer.accumulate_grad_batches),
+            num_training_steps=int(train_steps/self.trainer.accumulate_grad_batches),
+            num_cycles=5
         )
         return [optimizer], [
             {"scheduler": lr_scheduler, "interval": "step", "frequency": 1}
