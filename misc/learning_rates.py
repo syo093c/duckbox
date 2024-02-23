@@ -20,8 +20,10 @@
 """Learning rate decay functions."""
 
 import math
+from torch.optim.lr_scheduler import LRScheduler
+import ipdb
 
-class AnnealingLR(object):
+class AnnealingLR(LRScheduler):
     """Anneals the learning rate."""
 
     def __init__(
