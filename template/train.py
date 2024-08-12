@@ -34,7 +34,7 @@ def main():
     model_summary = RichModelSummary(max_depth=3)
     loss_checkpoint_callback = ModelCheckpoint(
         verbose=True,
-        filename=f"val_loss-" + "epoch_{epoch}-val_loss_{val/loss:.4f}-score_{score/valid_f1:.4f}",
+        filename=f"val_loss-" + "epoch_{epoch}-val_loss_{valid/loss:.4f}-score_{score/valid_f1:.4f}",
         monitor="valid/loss",
         mode="min",
         save_top_k=5,
@@ -44,7 +44,7 @@ def main():
     )
     score_checkpoint_callback = ModelCheckpoint(
         verbose=True,
-        filename=f"val_score-" + "epoch_{epoch}-val_loss_{val/loss:.4f}-socre_{score/valid_f1:.4f}",
+        filename=f"val_score-" + "epoch_{epoch}-val_loss_{valid/loss:.4f}-socre_{score/valid_f1:.4f}",
         monitor="score/train_f1",
         save_top_k=5,
         save_weights_only=True,
